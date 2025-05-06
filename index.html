@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger carrousel</title>
+    <style>
+      body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h1, h2, h3, h4, p, label {
+  font-family: "Roboto", sans-serif;
+}
+
+.presentation-table {
+  background: url("./table.jpg") center/cover no-repeat;
+  width: 100%;
+  height: 81vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 110px;
+  overflow: hidden;
+}
+
+.presentation-table h1 {
+  color: white;
+  font-weight: bold;
+  font-size: 2.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1.4;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 255, 255, 0.5);
+  padding: 20px;
+  background: linear-gradient(145deg, rgba(216, 47, 46, 0.6), rgba(255, 92, 0, 0.6));
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.animate-title {
+  transform: translateY(-1em);
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+@keyframes slideDown {
+  to {
+      transform: translateY(0);
+  }
+}
+
+.presentation-table .button-slider {
+  transform: translateY(80px);
+  display: flex;
+  gap: 10px;
+}
+
+.button-slider button,
+.button-slider a {
+  font-family: "Poppins", sans-serif;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 30px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  text-align: center;
+}
+
+.button-slider a {
+  text-decoration: none;
+  width: 125px;
+}
+
+.button-slider button {
+  width: 150px;
+}
+
+.primary {
+  background: linear-gradient(145deg, #d82f2e, #ff5c00);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+.primary:hover {
+  background: #ff9a00;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px);
+}
+
+.primary:nth-of-type(1) {
+  animation-delay: 1.5s;
+}
+
+.primary:nth-of-type(2) {
+  animation-delay: 1.7s;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+.container {
+  display: flex;
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 200px;
+}
+
+.box {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  transition: transform 0.5s ease, opacity 0.1s ease-in-out;
+  opacity: 0;
+}
+
+.box img {
+  width: 400px;
+}
+.hidden {
+  opacity: 0;
+  transform: scale(0.5);
+  z-index: 1;
+}
+.active {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+.next, .next2, .prev, .prev2 {
+  opacity: 1;
+  animation: delayedAppearance 0.1s ease forwards;
+}
+
+.next {
+  transform: translate(200px, 25px) translateZ(-150px) scale(0.8);
+  animation-delay: 0.2s;
+}
+
+.next2 {
+  transform: translate(400px, 50px) translateZ(-300px) scale(0.6);
+  visibility: hidden;
+  animation-delay: 0.2s;
+}
+
+.prev {
+  transform: translate(-200px, 25px) translateZ(-150px) scale(0.8);
+  animation-delay: 0.2s;
+}
+
+.prev2 {
+  transform: translate(-400px, 50px) translateZ(-300px) scale(0.6);
+  visibility: hidden;
+  animation-delay: 0.3s;
+}
+
+@keyframes delayedAppearance {
+  to {
+      visibility: visible;
+  }
+}
+    </style>
+</head>
+      
+<section class="presentation-table">
+<h1 class="animate-title">
+    Where burger artistry meets irresistibility – every bite is a flavor fiesta, a true "patty" masterpiece!
+</h1>
+    <div class="container" id="carousel">
+        <div class="box"><img src="./bg1.png" alt=""></div>
+        <div class="box"><img src="./bg2.png" alt=""></div>
+        <div class="box"><img src="./bg3.png" alt=""></div>
+        <div class="box"><img src="./bg4.png" alt=""></div>
+        <div class="box"><img src="./bg5.png" alt=""></div>
+        <div class="box"><img src="./bg6.png" alt=""></div>
+    </div>
+    <div class="button-slider">
+        <button class="primary" id="prevButton">Previous</button>
+        <button class="primary" id="nextButton">Next</button>
+    </div>
+</section>
+
+
+<script>
+const carousel = document.getElementById("carousel");
+const nextButton = document.getElementById("nextButton");
+const prevButton = document.getElementById("prevButton");
+carousel.style.opacity = '0';
+
+const boxes = Array.from(carousel.children);
+const totalBoxes = boxes.length;
+
+let activeIndex = 0;
+let autoAdvanceInterval;
+
+const classMappings = [
+    { className: "active", filter: 'brightness(1)', zIndex: '3' },
+    { className: "next", filter: 'brightness(0.7)', zIndex: '2' },
+    { className: "next2", filter: 'brightness(0.5)', zIndex: '1' },
+    { className: "prev", filter: 'brightness(0.7)', zIndex: '2' },
+    { className: "prev2", filter: 'brightness(0.5)', zIndex: '1' }
+];
+
+function updateCarousel() {
+    boxes.forEach((box, i) => {
+        const diff = (i - activeIndex + totalBoxes) % totalBoxes;
+        box.className = "box hidden";
+        box.style.filter = 'brightness(1)';
+        box.style.zIndex = '1';
+
+        const mapping = classMappings.find(mapping =>
+            (diff === 0 && mapping.className === "active") ||
+            (diff === 1 && mapping.className === "next") ||
+            (diff === 2 && mapping.className === "next2") ||
+            (diff === totalBoxes - 1 && mapping.className === "prev") ||
+            (diff === totalBoxes - 2 && mapping.className === "prev2")
+        );
+
+        if (mapping) {
+            requestAnimationFrame(() => {
+                box.classList.add(mapping.className);
+                box.style.filter = mapping.filter;
+                box.style.zIndex = mapping.zIndex;
+            });
+        }
+    });
+}
+
+function startAutoAdvance() {
+    autoAdvanceInterval = setInterval(() => {
+        activeIndex = (activeIndex + 1) % totalBoxes;
+        updateCarousel();
+    }, 3000);
+}
+
+function handleButtonClick(direction) {
+    clearInterval(autoAdvanceInterval);
+    activeIndex = (activeIndex + direction + totalBoxes) % totalBoxes;
+    updateCarousel();
+    startAutoAdvance();
+}
+
+nextButton.addEventListener("click", () => handleButtonClick(1));
+prevButton.addEventListener("click", () => handleButtonClick(-1));
+
+setTimeout(() => {
+    updateCarousel();
+    setTimeout(() => {
+        carousel.style.opacity = '1';
+        startAutoAdvance();
+    }, 100);
+}, 600);
+
+</script>
+</html>
+</body>
